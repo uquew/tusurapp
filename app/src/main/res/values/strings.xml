@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">ТУСУР</string>
+    <string name="nav_map">Карта</string>
+    <string name="nav_sdo">СДО</string>
+    <string name="nav_schedule">Расписание</string>
+    <string name="nav_profile">Профиль</string>
+    <string name="login_title">Войти в СДО ТУСУР</string>
+    <string name="login_subtitle">Доступ к курсам и материалам\nдля обучения</string>
+    <string name="hint_login">Логин</string>
+    <string name="hint_password">Пароль</string>
+    <string name="btn_login">Войти</string>
+    <string name="forgot_password">Забыли пароль?</string>
+    <string name="map_search_hint">Найти аудиторию, корпус…</string>
+    <string name="performance_title">Успеваемость</string>
+    <string name="avg_score">Средний балл</string>
+    <string name="search_subject">Найти предмет…</string>
+    <string name="kt1">КТ1</string>
+    <string name="kt2">КТ2</string>
+    <string name="ekz">ЭКЗ</string>
+    <string name="schedule_title">Расписание</string>
+    <string name="no_schedule">Расписание загружается…</string>
+</resources>

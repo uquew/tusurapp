@@ -1,0 +1,24 @@
+*.iml
+.gradle
+/local.properties
+/.idea
+/build
+/app/build
+/captures
+.externalNativeBuild
+.cxx
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+*.log
+*.tmp
+*.bak
+/app/release
+/app/debug
+.DS_Store
+Thumbs.db
+# Extra files in root
+fragmnet_schedule.xml
+item_lesson.xml
