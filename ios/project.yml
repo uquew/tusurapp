@@ -1,0 +1,38 @@
+name: TusurApp
+options:
+  bundleIdPrefix: com.tusur
+  deploymentTarget:
+    iOS: "16.0"
+  xcodeVersion: "15.0"
+
+settings:
+  base:
+    SWIFT_VERSION: "5.9"
+    TARGETED_DEVICE_FAMILY: "1"
+    INFOPLIST_FILE: TusurApp/Info.plist
+    ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    DEVELOPMENT_TEAM: ""
+    CODE_SIGN_IDENTITY: ""
+    CODE_SIGNING_REQUIRED: "NO"
+    CODE_SIGNING_ALLOWED: "NO"
+
+targets:
+  TusurApp:
+    type: application
+    platform: iOS
+    sources:
+      - path: TusurApp
+        excludes:
+          - "**/*.xcassets/**/.*"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.tusur.app
+        PRODUCT_NAME: ТУСУР
+        MARKETING_VERSION: "1.0.0"
+        CURRENT_PROJECT_VERSION: "1"
+        GENERATE_INFOPLIST_FILE: false
+        INFOPLIST_FILE: TusurApp/Info.plist
+        SWIFT_EMIT_LOC_STRINGS: "YES"
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+    resources:
+      - path: TusurApp/Assets.xcassets
