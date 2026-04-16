@@ -6,6 +6,8 @@ import android.content.pm.PackageManager
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.RectF
+import android.graphics.Typeface
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.Bitmap
 import android.os.Bundle
@@ -218,18 +220,117 @@ class MapFragment : Fragment() {
 
     private fun addPlaceMarkers() {
         for (place in places) {
+            val isTusur = place.name.contains("ТУСУР", true)
+            val needsLabel = isTusur && (place.type == PlaceType.BUILDING || place.type == PlaceType.DORMITORY || place.type == PlaceType.LIBRARY || place.type == PlaceType.SPORTS)
+
             val marker = Marker(mapView)
             marker.position = GeoPoint(place.lat, place.lon)
-            marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
             marker.title = place.name
             marker.snippet = place.address
             if (place.description.isNotEmpty()) {
                 marker.subDescription = place.description
             }
-            marker.icon = createMarkerIcon(place.type)
+
+            if (needsLabel) {
+                marker.icon = createLabeledMarkerIcon(place.shortName, place.type)
+                marker.setAnchor(Marker.ANCHOR_CENTER, 1.0f)
+            } else {
+                marker.icon = createMarkerIcon(place.type)
+                marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+            }
+
             mapView.overlays.add(marker)
         }
         mapView.invalidate()
+    }
+
+    private fun getTypeColor(type: PlaceType): Int = when (type) {
+        PlaceType.BUILDING -> Color.parseColor("#3D3DA8")
+        PlaceType.DORMITORY -> Color.parseColor("#E65100")
+        PlaceType.SPORTS -> Color.parseColor("#2E7D32")
+        PlaceType.LIBRARY -> Color.parseColor("#1565C0")
+        PlaceType.FOOD -> Color.parseColor("#C62828")
+        PlaceType.TRANSPORT -> Color.parseColor("#00838F")
+        PlaceType.SHOP -> Color.parseColor("#6A1B9A")
+        PlaceType.MEDICINE -> Color.parseColor("#D32F2F")
+        PlaceType.CULTURE -> Color.parseColor("#F57F17")
+        PlaceType.OTHER -> Color.parseColor("#546E7A")
+    }
+
+    private fun createLabeledMarkerIcon(label: String, type: PlaceType): BitmapDrawable {
+        val density = resources.displayMetrics.density
+        val pinRadius = (14 * density)
+        val pinSize = (pinRadius * 2).toInt()
+        val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            color = Color.WHITE
+            textSize = 12 * density
+            typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+            textAlign = Paint.Align.CENTER
+        }
+        val textBounds = android.graphics.Rect()
+        textPaint.getTextBounds(label, 0, label.length, textBounds)
+
+        val labelPadH = (8 * density).toInt()
+        val labelPadV = (4 * density).toInt()
+        val labelW = textBounds.width() + labelPadH * 2
+        val labelH = textBounds.height() + labelPadV * 2
+        val labelRadius = 6 * density
+        val gap = (4 * density).toInt()
+
+        val totalW = maxOf(labelW, pinSize) + 4
+        val totalH = labelH + gap + pinSize + 4
+
+        val bitmap = Bitmap.createBitmap(totalW, totalH, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+        val typeColor = getTypeColor(type)
+
+        // — Плашка с надписью —
+        val labelLeft = (totalW - labelW) / 2f
+        val labelTop = 0f
+        val labelRect = RectF(labelLeft, labelTop, labelLeft + labelW, labelTop + labelH)
+
+        // Тень плашки
+        val shadowPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+        shadowPaint.color = Color.parseColor("#30000000")
+        canvas.drawRoundRect(
+            RectF(labelRect.left + 1, labelRect.top + 2, labelRect.right + 1, labelRect.bottom + 2),
+            labelRadius, labelRadius, shadowPaint
+        )
+
+        // Фон плашки
+        val bgPaint = Paint(Paint.ANTI_ALIAS_FLAG)
+        bgPaint.color = typeColor
+        canvas.drawRoundRect(labelRect, labelRadius, labelRadius, bgPaint)
+
+        // Обводка
+        val strokePaint = Paint(Paint.ANTI_ALIAS_FLAG)
+        strokePaint.color = Color.WHITE
+        strokePaint.style = Paint.Style.STROKE
+        strokePaint.strokeWidth = 1.5f * density
+        canvas.drawRoundRect(labelRect, labelRadius, labelRadius, strokePaint)
+
+        // Текст
+        val textX = totalW / 2f
+        val textY = labelTop + labelPadV + textBounds.height()
+        canvas.drawText(label, textX, textY, textPaint)
+
+        // — Маркер-точка —
+        val pinCx = totalW / 2f
+        val pinCy = labelH + gap + pinRadius
+
+        // Тень
+        shadowPaint.color = Color.parseColor("#40000000")
+        canvas.drawCircle(pinCx, pinCy + 2f, pinRadius * 0.85f, shadowPaint)
+
+        // Круг
+        bgPaint.color = typeColor
+        canvas.drawCircle(pinCx, pinCy, pinRadius * 0.85f, bgPaint)
+
+        // Белая точка внутри
+        bgPaint.color = Color.WHITE
+        canvas.drawCircle(pinCx, pinCy, pinRadius * 0.35f, bgPaint)
+
+        return BitmapDrawable(resources, bitmap)
     }
 
     private fun createMarkerIcon(type: PlaceType): BitmapDrawable {
@@ -243,18 +344,7 @@ class MapFragment : Fragment() {
         canvas.drawCircle(size / 2f, size / 2f + 2f, size / 3f, paint)
 
         // Цвет по типу
-        paint.color = when (type) {
-            PlaceType.BUILDING -> Color.parseColor("#3D3DA8")
-            PlaceType.DORMITORY -> Color.parseColor("#E65100")
-            PlaceType.SPORTS -> Color.parseColor("#2E7D32")
-            PlaceType.LIBRARY -> Color.parseColor("#1565C0")
-            PlaceType.FOOD -> Color.parseColor("#C62828")
-            PlaceType.TRANSPORT -> Color.parseColor("#00838F")
-            PlaceType.SHOP -> Color.parseColor("#6A1B9A")
-            PlaceType.MEDICINE -> Color.parseColor("#D32F2F")
-            PlaceType.CULTURE -> Color.parseColor("#F57F17")
-            PlaceType.OTHER -> Color.parseColor("#546E7A")
-        }
+        paint.color = getTypeColor(type)
         canvas.drawCircle(size / 2f, size / 2f - 1f, size / 3f, paint)
 
         // Белая точка
