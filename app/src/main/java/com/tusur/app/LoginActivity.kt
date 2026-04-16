@@ -22,9 +22,17 @@ class LoginActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
 
         session = SessionManager(this)
+
+        // Если уже залогинен — сразу на главный экран
+        if (session.isLoggedIn && session.email.isNotEmpty()) {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+            return
+        }
+
+        setContentView(R.layout.activity_login)
 
         val tilEmail    = findViewById<TextInputLayout>(R.id.til_email)
         val tilPassword = findViewById<TextInputLayout>(R.id.til_password)
