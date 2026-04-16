@@ -19,7 +19,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import android.widget.TextView
 import androidx.cardview.widget.CardView
-import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,10 +37,9 @@ class MapFragment : Fragment() {
     private lateinit var mapView: MapView
     private var myLocationOverlay: MyLocationNewOverlay? = null
 
-    // Центр Томска / ТУСУР
-    private val TUSUR_CENTER = GeoPoint(56.4884, 68.0178)
+    // Центр — главный корпус ТУСУР (пр. Ленина, 40, Томск)
+    private val TUSUR_CENTER = GeoPoint(56.4703, 84.9505)
 
-    // Корпуса и объекты ТУСУР
     data class MapPlace(
         val name: String,
         val shortName: String,
@@ -52,75 +50,132 @@ class MapFragment : Fragment() {
         val description: String = ""
     )
 
-    enum class PlaceType { BUILDING, DORMITORY, SPORTS, LIBRARY, FOOD, OTHER }
+    enum class PlaceType { BUILDING, DORMITORY, SPORTS, LIBRARY, FOOD, TRANSPORT, SHOP, MEDICINE, CULTURE, OTHER }
 
     private val places = listOf(
-        // Учебные корпуса
+        // ===== КОРПУСА ТУСУР =====
         MapPlace("Главный корпус ТУСУР", "ГК", "пр. Ленина, 40",
-            56.4884, 68.0178, PlaceType.BUILDING, "Главный учебный корпус"),
-        MapPlace("Учебный корпус ТУСУР (ФЭТ)", "УК ФЭТ", "ул. Вершинина, 74",
-            56.4870, 68.0120, PlaceType.BUILDING, "Факультет электронной техники"),
-        MapPlace("Учебный корпус ТУСУР (КИБЭВС)", "УК КИБЭВС", "ул. Красноармейская, 146",
-            56.4868, 68.0218, PlaceType.BUILDING, "Кафедра КИБЭВС"),
-        MapPlace("Радиотехнический корпус", "РТК", "ул. Вершинина, 47",
-            56.4862, 68.0148, PlaceType.BUILDING, "Радиотехнический факультет"),
+            56.4703, 84.9505, PlaceType.BUILDING, "Главный учебный корпус университета"),
+        MapPlace("Учебный корпус ФЭТ", "ФЭТ", "ул. Вершинина, 74",
+            56.4678, 84.9486, PlaceType.BUILDING, "Факультет электронной техники"),
+        MapPlace("Учебно-лабораторный корпус", "УЛК", "ул. Красноармейская, 146",
+            56.4714, 84.9533, PlaceType.BUILDING, "Лаборатории и учебные аудитории"),
+        MapPlace("Радиотехнический корпус", "РК", "ул. Вершинина, 47",
+            56.4688, 84.9462, PlaceType.BUILDING, "Радиотехнический факультет"),
         MapPlace("Корпус ФСУ", "ФСУ", "ул. Красноармейская, 146",
-            56.4872, 68.0225, PlaceType.BUILDING, "Факультет систем управления"),
-        MapPlace("Учебно-лабораторный корпус", "УЛК", "ул. Вершинина, 64",
-            56.4878, 68.0105, PlaceType.BUILDING, "Лаборатории и практикумы"),
-        MapPlace("Корпус ФВС", "ФВС", "ул. Ленина, 40, стр. 2",
-            56.4880, 68.0190, PlaceType.BUILDING, "Факультет вычислительных систем"),
-        MapPlace("Научная библиотека ТУСУР", "НБ", "ул. Вершинина, 47",
-            56.4858, 68.0145, PlaceType.LIBRARY, "Научная библиотека"),
+            56.4710, 84.9540, PlaceType.BUILDING, "Факультет систем управления"),
+        MapPlace("Корпус ФВС", "ФВС", "ул. Красноармейская, 146б",
+            56.4718, 84.9528, PlaceType.BUILDING, "Факультет вычислительных систем"),
         MapPlace("Бизнес-инкубатор ТУСУР", "БИ", "ул. Вершинина, 72",
-            56.4875, 68.0110, PlaceType.BUILDING, "Студенческий бизнес-инкубатор"),
+            56.4681, 84.9479, PlaceType.BUILDING, "Студенческий бизнес-инкубатор"),
+        MapPlace("Научная библиотека ТУСУР", "Библиотека", "ул. Вершинина, 47",
+            56.4685, 84.9458, PlaceType.LIBRARY, "Научная библиотека университета"),
 
-        // Общежития
-        MapPlace("Общежитие №1", "Общ. 1", "ул. Вершинина, 48",
-            56.4856, 68.0132, PlaceType.DORMITORY),
-        MapPlace("Общежитие №2", "Общ. 2", "ул. Вершинина, 46",
-            56.4852, 68.0125, PlaceType.DORMITORY),
-        MapPlace("Общежитие №3", "Общ. 3", "ул. Лыткина, 8",
-            56.4830, 68.0155, PlaceType.DORMITORY),
-        MapPlace("Общежитие №4", "Общ. 4", "ул. Вершинина, 44",
-            56.4848, 68.0118, PlaceType.DORMITORY),
-        MapPlace("Общежитие №5", "Общ. 5", "пер. Спортивный, 9",
-            56.4840, 68.0100, PlaceType.DORMITORY),
-        MapPlace("Общежитие №6", "Общ. 6", "ул. 19 Гвардейской дивизии, 11а",
-            56.4800, 68.0040, PlaceType.DORMITORY),
+        // ===== ОБЩЕЖИТИЯ ТУСУР =====
+        MapPlace("Общежитие ТУСУР №1", "Общ.1", "ул. Вершинина, 48",
+            56.4672, 84.9454, PlaceType.DORMITORY),
+        MapPlace("Общежитие ТУСУР №2", "Общ.2", "ул. Вершинина, 46",
+            56.4669, 84.9448, PlaceType.DORMITORY),
+        MapPlace("Общежитие ТУСУР №3", "Общ.3", "ул. Лыткина, 8",
+            56.4651, 84.9430, PlaceType.DORMITORY),
+        MapPlace("Общежитие ТУСУР №4", "Общ.4", "ул. Вершинина, 44",
+            56.4665, 84.9442, PlaceType.DORMITORY),
+        MapPlace("Общежитие ТУСУР №5", "Общ.5", "пер. Спортивный, 9",
+            56.4660, 84.9420, PlaceType.DORMITORY),
+        MapPlace("Общежитие ТУСУР №6", "Общ.6", "ул. 19 Гвардейской дивизии, 11а",
+            56.4620, 84.9350, PlaceType.DORMITORY),
 
-        // Спорт
+        // ===== СПОРТ ТУСУР =====
         MapPlace("Спортивный зал ТУСУР", "Спортзал", "ул. Вершинина, 48а",
-            56.4860, 68.0138, PlaceType.SPORTS, "Спортивный комплекс"),
-        MapPlace("Стадион ТУСУР", "Стадион", "ул. Вершинина, 48",
-            56.4854, 68.0140, PlaceType.SPORTS),
+            56.4675, 84.9460, PlaceType.SPORTS, "Спортивный комплекс"),
 
-        // Еда
-        MapPlace("Столовая ТУСУР (ГК)", "Столовая ГК", "пр. Ленина, 40",
-            56.4882, 68.0175, PlaceType.FOOD, "Столовая в главном корпусе"),
-        MapPlace("Буфет УЛК", "Буфет УЛК", "ул. Вершинина, 64",
-            56.4876, 68.0108, PlaceType.FOOD),
+        // ===== СТОЛОВЫЕ =====
+        MapPlace("Столовая ТУСУР (ГК)", "Столовая", "пр. Ленина, 40",
+            56.4701, 84.9502, PlaceType.FOOD, "Столовая в главном корпусе"),
 
-        // Важные места Томска рядом
-        MapPlace("Площадь Ленина", "Пл. Ленина", "пл. Ленина",
-            56.4885, 68.0230, PlaceType.OTHER),
+        // ===== ДРУГИЕ ВУЗЫ ТОМСКА =====
         MapPlace("Томский политехнический университет", "ТПУ", "пр. Ленина, 30",
-            56.4690, 68.0310, PlaceType.OTHER, "Соседний вуз"),
+            56.4634, 84.9502, PlaceType.BUILDING, "Национальный исследовательский ТПУ"),
         MapPlace("Томский государственный университет", "ТГУ", "пр. Ленина, 36",
-            56.4715, 68.0415, PlaceType.OTHER, "Классический университет")
+            56.4673, 84.9504, PlaceType.BUILDING, "Национальный исследовательский ТГУ"),
+        MapPlace("ТГАСУ", "ТГАСУ", "пл. Соляная, 2",
+            56.4740, 84.9543, PlaceType.BUILDING, "Томский архитектурно-строительный"),
+        MapPlace("СибГМУ", "СибГМУ", "Московский тракт, 2",
+            56.4760, 84.9492, PlaceType.BUILDING, "Сибирский медицинский университет"),
+
+        // ===== ТРАНСПОРТ =====
+        MapPlace("Ж/д вокзал Томск-1", "Вокзал", "пр. Кирова, 68",
+            56.4840, 84.9478, PlaceType.TRANSPORT, "Железнодорожный вокзал"),
+        MapPlace("Автовокзал Томска", "Автовокзал", "пр. Кирова, 68а",
+            56.4843, 84.9470, PlaceType.TRANSPORT, "Междугородный автобусный вокзал"),
+        MapPlace("Остановка «Кинотеатр Киномир»", "Киномир", "пр. Ленина, 41",
+            56.4707, 84.9520, PlaceType.TRANSPORT, "Трамвай, автобус"),
+        MapPlace("Остановка «Площадь Ленина»", "Пл. Ленина", "пл. Ленина",
+            56.4718, 84.9560, PlaceType.TRANSPORT, "Трамвай, автобус, маршрутка"),
+        MapPlace("Остановка «ТПУ»", "ТПУ ост.", "пр. Ленина, 30",
+            56.4636, 84.9490, PlaceType.TRANSPORT, "Трамвай, автобус"),
+
+        // ===== МАГАЗИНЫ =====
+        MapPlace("ТЦ «Изумрудный город»", "Изумрудный", "пр. Ленина, 195",
+            56.4917, 84.9682, PlaceType.SHOP, "Торговый центр"),
+        MapPlace("Лента", "Лента", "ул. Елизаровых, 13",
+            56.4910, 84.9470, PlaceType.SHOP, "Гипермаркет"),
+        MapPlace("Пятёрочка (Вершинина)", "Пятёрочка", "ул. Вершинина, 40",
+            56.4660, 84.9435, PlaceType.SHOP, "Продуктовый магазин"),
+        MapPlace("Мария-Ра (Ленина)", "Мария-Ра", "пр. Ленина, 54",
+            56.4725, 84.9520, PlaceType.SHOP, "Продуктовый магазин"),
+
+        // ===== ЕДА =====
+        MapPlace("KFC (Ленина)", "KFC", "пр. Ленина, 38",
+            56.4697, 84.9510, PlaceType.FOOD, "Быстрое питание"),
+        MapPlace("Додо Пицца (Ленина)", "Додо Пицца", "пр. Ленина, 83",
+            56.4778, 84.9555, PlaceType.FOOD, "Пиццерия"),
+        MapPlace("Subway (Ленина)", "Subway", "пр. Ленина, 54",
+            56.4726, 84.9518, PlaceType.FOOD, "Быстрое питание"),
+        MapPlace("Шоколадница", "Шоколадница", "пр. Ленина, 56",
+            56.4730, 84.9525, PlaceType.FOOD, "Кофейня"),
+
+        // ===== МЕДИЦИНА =====
+        MapPlace("Поликлиника №1", "Поликл.1", "ул. Кузнецова, 26",
+            56.4755, 84.9498, PlaceType.MEDICINE, "Городская поликлиника"),
+        MapPlace("Аптека 36,6 (Ленина)", "Аптека", "пр. Ленина, 48",
+            56.4715, 84.9515, PlaceType.MEDICINE, "Аптека"),
+        MapPlace("ОКБ", "ОКБ", "ул. Ивана Черных, 96",
+            56.4530, 84.9530, PlaceType.MEDICINE, "Областная клиническая больница"),
+
+        // ===== КУЛЬТУРА =====
+        MapPlace("Площадь Ленина", "Пл. Ленина", "пл. Ленина",
+            56.4718, 84.9563, PlaceType.CULTURE, "Центральная площадь Томска"),
+        MapPlace("Томский областной драмтеатр", "Драмтеатр", "пл. Ленина, 4",
+            56.4725, 84.9575, PlaceType.CULTURE, "Театр драмы"),
+        MapPlace("Набережная Томи", "Набережная", "Набережная реки Томи",
+            56.4685, 84.9555, PlaceType.CULTURE, "Прогулочная зона"),
+        MapPlace("Лагерный сад", "Лагерный сад", "пр. Ленина",
+            56.4590, 84.9480, PlaceType.CULTURE, "Парк и мемориал"),
+        MapPlace("Городской сад (Горсад)", "Горсад", "пр. Ленина, 60",
+            56.4740, 84.9530, PlaceType.CULTURE, "Парк аттракционов"),
+        MapPlace("Киномир IMAX", "Киномир", "пр. Ленина, 41",
+            56.4705, 84.9515, PlaceType.CULTURE, "Кинотеатр"),
+        MapPlace("Новособорная площадь", "Новособорная", "пр. Ленина / ул. Советская",
+            56.4685, 84.9520, PlaceType.CULTURE, "Фонтаны и прогулочная зона"),
+
+        // ===== ПРОЧЕЕ =====
+        MapPlace("Почта России (Ленина)", "Почта", "пр. Ленина, 93",
+            56.4790, 84.9570, PlaceType.OTHER, "Почтовое отделение"),
+        MapPlace("МФЦ Томска", "МФЦ", "пр. Фрунзе, 103д",
+            56.4700, 84.9370, PlaceType.OTHER, "Многофункциональный центр"),
+        MapPlace("Администрация Томска", "Администрация", "пр. Ленина, 73",
+            56.4757, 84.9558, PlaceType.OTHER, "Администрация города")
     )
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View {
-        // Конфигурация OSMDroid
         val ctx = requireContext()
         Configuration.getInstance().load(ctx, ctx.getSharedPreferences("osm_prefs", Context.MODE_PRIVATE))
         Configuration.getInstance().userAgentValue = ctx.packageName
-        // Увеличиваем размер кэша для оффлайн работы (256 MB)
         Configuration.getInstance().tileFileSystemCacheMaxBytes = 256L * 1024 * 1024
         Configuration.getInstance().tileFileSystemCacheTrimBytes = 200L * 1024 * 1024
-
         return inflater.inflate(R.layout.fragment_map, container, false)
     }
 
@@ -132,20 +187,13 @@ class MapFragment : Fragment() {
         val rvResults = view.findViewById<RecyclerView>(R.id.rv_search_results)
         val btnMyLocation = view.findViewById<CardView>(R.id.btn_my_location)
 
-        // Настройка карты
         setupMap()
-
-        // Добавляем маркеры корпусов
         addPlaceMarkers()
 
-        // Поиск
         rvResults.layoutManager = LinearLayoutManager(requireContext())
         setupSearch(etSearch, btnSearch, cardResults, rvResults)
 
-        // Моё местоположение
         btnMyLocation.setOnClickListener { goToMyLocation() }
-
-        // Запрашиваем разрешение на геолокацию
         requestLocationPermission()
     }
 
@@ -155,22 +203,17 @@ class MapFragment : Fragment() {
         mapView.minZoomLevel = 10.0
         mapView.maxZoomLevel = 19.0
 
-        // Начальная позиция — ТУСУР
         mapView.controller.setZoom(16.0)
         mapView.controller.setCenter(TUSUR_CENTER)
 
-        // Включаем кэширование тайлов (оффлайн)
-        mapView.setUseDataConnection(true) // сначала загрузим, потом работает оффлайн
+        mapView.setUseDataConnection(true)
         mapView.isTilesScaledToDpi = true
 
-        // Оверлей «моё местоположение»
         try {
             myLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(requireContext()), mapView)
             myLocationOverlay?.enableMyLocation()
             mapView.overlays.add(myLocationOverlay)
-        } catch (e: Exception) {
-            // Если нет разрешения — пропускаем
-        }
+        } catch (_: Exception) {}
     }
 
     private fun addPlaceMarkers() {
@@ -183,46 +226,47 @@ class MapFragment : Fragment() {
             if (place.description.isNotEmpty()) {
                 marker.subDescription = place.description
             }
-
-            // Цветной маркер по типу
             marker.icon = createMarkerIcon(place.type)
-
             mapView.overlays.add(marker)
         }
         mapView.invalidate()
     }
 
     private fun createMarkerIcon(type: PlaceType): BitmapDrawable {
-        val size = 40
+        val size = (36 * resources.displayMetrics.density).toInt()
         val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         val paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
+        // Тень
+        paint.color = Color.parseColor("#40000000")
+        canvas.drawCircle(size / 2f, size / 2f + 2f, size / 3f, paint)
+
         // Цвет по типу
         paint.color = when (type) {
-            PlaceType.BUILDING -> Color.parseColor("#3D3DA8")   // фиолетовый — корпуса
-            PlaceType.DORMITORY -> Color.parseColor("#E65100")  // оранжевый — общежития
-            PlaceType.SPORTS -> Color.parseColor("#2E7D32")     // зелёный — спорт
-            PlaceType.LIBRARY -> Color.parseColor("#1565C0")    // синий — библиотека
-            PlaceType.FOOD -> Color.parseColor("#C62828")       // красный — еда
-            PlaceType.OTHER -> Color.parseColor("#6B6B8A")      // серый — прочее
+            PlaceType.BUILDING -> Color.parseColor("#3D3DA8")
+            PlaceType.DORMITORY -> Color.parseColor("#E65100")
+            PlaceType.SPORTS -> Color.parseColor("#2E7D32")
+            PlaceType.LIBRARY -> Color.parseColor("#1565C0")
+            PlaceType.FOOD -> Color.parseColor("#C62828")
+            PlaceType.TRANSPORT -> Color.parseColor("#00838F")
+            PlaceType.SHOP -> Color.parseColor("#6A1B9A")
+            PlaceType.MEDICINE -> Color.parseColor("#D32F2F")
+            PlaceType.CULTURE -> Color.parseColor("#F57F17")
+            PlaceType.OTHER -> Color.parseColor("#546E7A")
         }
+        canvas.drawCircle(size / 2f, size / 2f - 1f, size / 3f, paint)
 
-        // Рисуем pin
-        canvas.drawCircle(size / 2f, size / 2f - 4f, size / 3f, paint)
-
-        // Белая точка внутри
+        // Белая точка
         paint.color = Color.WHITE
-        canvas.drawCircle(size / 2f, size / 2f - 4f, size / 6f, paint)
+        canvas.drawCircle(size / 2f, size / 2f - 1f, size / 7f, paint)
 
         return BitmapDrawable(resources, bitmap)
     }
 
     private fun setupSearch(
-        etSearch: EditText,
-        btnSearch: TextView,
-        cardResults: CardView,
-        rvResults: RecyclerView
+        etSearch: EditText, btnSearch: TextView,
+        cardResults: CardView, rvResults: RecyclerView
     ) {
         val searchAction = {
             val query = etSearch.text.toString().trim()
@@ -230,7 +274,6 @@ class MapFragment : Fragment() {
                 val results = searchPlaces(query)
                 if (results.isNotEmpty()) {
                     rvResults.adapter = SearchResultAdapter(results) { place ->
-                        // Переходим к месту
                         mapView.controller.animateTo(GeoPoint(place.lat, place.lon))
                         mapView.controller.setZoom(18.0)
                         cardResults.visibility = View.GONE
@@ -252,23 +295,12 @@ class MapFragment : Fragment() {
         })
 
         etSearch.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
-                searchAction()
-                hideKeyboard(etSearch)
-                true
-            } else false
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) { searchAction(); hideKeyboard(etSearch); true } else false
         }
+        btnSearch.setOnClickListener { searchAction(); hideKeyboard(etSearch) }
 
-        btnSearch.setOnClickListener {
-            searchAction()
-            hideKeyboard(etSearch)
-        }
-
-        // Закрытие результатов при нажатии на карту
         mapView.setOnTouchListener { _, _ ->
-            if (cardResults.visibility == View.VISIBLE) {
-                cardResults.visibility = View.GONE
-            }
+            if (cardResults.visibility == View.VISIBLE) cardResults.visibility = View.GONE
             false
         }
     }
@@ -279,7 +311,11 @@ class MapFragment : Fragment() {
             it.name.lowercase().contains(q) ||
             it.shortName.lowercase().contains(q) ||
             it.address.lowercase().contains(q) ||
-            it.description.lowercase().contains(q)
+            it.description.lowercase().contains(q) ||
+            it.type.name.lowercase().contains(q)
+        }.sortedBy {
+            // ТУСУР в приоритете
+            if (it.name.contains("ТУСУР", true)) 0 else 1
         }
     }
 
@@ -289,7 +325,6 @@ class MapFragment : Fragment() {
             mapView.controller.animateTo(loc)
             mapView.controller.setZoom(17.0)
         } else {
-            // Если нет геолокации — центрируем на ТУСУР
             mapView.controller.animateTo(TUSUR_CENTER)
             mapView.controller.setZoom(16.0)
         }
@@ -298,10 +333,7 @@ class MapFragment : Fragment() {
     private fun requestLocationPermission() {
         if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION)
             != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(
-                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
-                1001
-            )
+            requestPermissions(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), 1001)
         }
     }
 
@@ -310,24 +342,11 @@ class MapFragment : Fragment() {
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
-    override fun onResume() {
-        super.onResume()
-        mapView.onResume()
-    }
-
-    override fun onPause() {
-        mapView.onPause()
-        super.onPause()
-    }
-
-    override fun onDestroyView() {
-        myLocationOverlay?.disableMyLocation()
-        mapView.onDetach()
-        super.onDestroyView()
-    }
+    override fun onResume() { super.onResume(); mapView.onResume() }
+    override fun onPause() { mapView.onPause(); super.onPause() }
+    override fun onDestroyView() { myLocationOverlay?.disableMyLocation(); mapView.onDetach(); super.onDestroyView() }
 }
 
-// Адаптер для результатов поиска
 class SearchResultAdapter(
     private val items: List<MapFragment.MapPlace>,
     private val onClick: (MapFragment.MapPlace) -> Unit
@@ -347,12 +366,16 @@ class SearchResultAdapter(
         h.tvName.text = item.name
         h.tvAddress.text = item.address
         h.tvIcon.text = when (item.type) {
-            MapFragment.PlaceType.BUILDING -> "\uD83C\uDFEB"   // school
-            MapFragment.PlaceType.DORMITORY -> "\uD83C\uDFE0"  // house
-            MapFragment.PlaceType.SPORTS -> "\u26BD"            // football
-            MapFragment.PlaceType.LIBRARY -> "\uD83D\uDCDA"    // books
-            MapFragment.PlaceType.FOOD -> "\uD83C\uDF7D"       // fork & knife
-            MapFragment.PlaceType.OTHER -> "\uD83D\uDCCD"      // pin
+            MapFragment.PlaceType.BUILDING -> "\uD83C\uDFEB"
+            MapFragment.PlaceType.DORMITORY -> "\uD83C\uDFE0"
+            MapFragment.PlaceType.SPORTS -> "\u26BD"
+            MapFragment.PlaceType.LIBRARY -> "\uD83D\uDCDA"
+            MapFragment.PlaceType.FOOD -> "\uD83C\uDF7D"
+            MapFragment.PlaceType.TRANSPORT -> "\uD83D\uDE8C"
+            MapFragment.PlaceType.SHOP -> "\uD83D\uDED2"
+            MapFragment.PlaceType.MEDICINE -> "\u2695"
+            MapFragment.PlaceType.CULTURE -> "\uD83C\uDFAD"
+            MapFragment.PlaceType.OTHER -> "\uD83D\uDCCD"
         }
         h.itemView.setOnClickListener { onClick(item) }
     }
