@@ -1,8 +1,11 @@
 package com.tusur.app
 
+import android.app.DownloadManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.text.Html
 import android.text.method.LinkMovementMethod
 import android.view.LayoutInflater
@@ -12,7 +15,9 @@ import android.widget.LinearLayout
 import android.widget.ProgressBar
 import android.widget.ScrollView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.coroutines.*
@@ -211,9 +216,103 @@ class CourseContentActivity : AppCompatActivity() {
         val ext = name.substringAfterLast(".", "").uppercase()
         card.findViewById<TextView>(R.id.tv_file_ext).text = if (ext.length <= 4) ext else "FILE"
         card.setOnClickListener {
-            try { startActivity(Intent(Intent.ACTION_VIEW, android.net.Uri.parse(url))) } catch (_: Exception) {}
+            downloadFile(name, url)
         }
         parent.addView(card)
+    }
+
+    private fun downloadFile(fileName: String, fileUrl: String) {
+        try {
+            // Определяем имя файла
+            val cleanName = if (fileName.contains(".")) fileName
+            else "$fileName.pdf"
+
+            val dm = getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
+            val request = DownloadManager.Request(Uri.parse(fileUrl)).apply {
+                setTitle(cleanName)
+                setDescription("Загрузка из СДО ТУСУР")
+                setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
+                setDestinationInExternalPublicDir(Environment.DIRECTORY_DOWNLOADS, "TUSUR/$cleanName")
+
+                // Передаём cookies для авторизации
+                val cookieString = cookies.entries.joinToString("; ") { "${it.key}=${it.value}" }
+                addRequestHeader("Cookie", cookieString)
+                addRequestHeader("User-Agent", "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36")
+            }
+
+            dm.enqueue(request)
+            Toast.makeText(this, "Скачивание: $cleanName", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            // Fallback — скачиваем через корутину напрямую
+            downloadFileDirect(fileName, fileUrl)
+        }
+    }
+
+    private fun downloadFileDirect(fileName: String, fileUrl: String) {
+        val cleanName = if (fileName.contains(".")) fileName else "$fileName.pdf"
+
+        Toast.makeText(this, "Загрузка $cleanName...", Toast.LENGTH_SHORT).show()
+
+        scope.launch {
+            try {
+                val file = withContext(Dispatchers.IO) {
+                    val ssl = buildTrustAllSsl()
+                    val url = URL(fileUrl)
+                    val conn = (url.openConnection() as HttpsURLConnection).apply {
+                        sslSocketFactory = ssl.socketFactory
+                        hostnameVerifier = javax.net.ssl.HostnameVerifier { _, _ -> true }
+                        setRequestProperty("Cookie", cookies.entries.joinToString("; ") { "${it.key}=${it.value}" })
+                        setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36")
+                        connectTimeout = 30_000
+                        readTimeout = 30_000
+                        instanceFollowRedirects = true
+                    }
+
+                    // Следуем редиректам вручную с cookies
+                    var finalConn = conn
+                    var redirectCount = 0
+                    while (redirectCount < 10) {
+                        finalConn.connect()
+                        val code = finalConn.responseCode
+                        if (code in 301..303 || code == 307) {
+                            val loc = finalConn.getHeaderField("Location") ?: break
+                            val nextUrl = if (loc.startsWith("http")) loc else "https://sdo.tusur.ru$loc"
+                            finalConn.disconnect()
+                            finalConn = (URL(nextUrl).openConnection() as HttpsURLConnection).apply {
+                                sslSocketFactory = ssl.socketFactory
+                                hostnameVerifier = javax.net.ssl.HostnameVerifier { _, _ -> true }
+                                setRequestProperty("Cookie", cookies.entries.joinToString("; ") { "${it.key}=${it.value}" })
+                                setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 13) AppleWebKit/537.36")
+                                connectTimeout = 30_000
+                                readTimeout = 30_000
+                                instanceFollowRedirects = false
+                            }
+                            redirectCount++
+                        } else break
+                    }
+
+                    val downloadsDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)
+                    val tusurDir = java.io.File(downloadsDir, "TUSUR")
+                    if (!tusurDir.exists()) tusurDir.mkdirs()
+
+                    val outFile = java.io.File(tusurDir, cleanName)
+                    finalConn.inputStream.use { input ->
+                        outFile.outputStream().use { output ->
+                            input.copyTo(output)
+                        }
+                    }
+                    finalConn.disconnect()
+                    outFile
+                }
+
+                Toast.makeText(this@CourseContentActivity,
+                    "Сохранено: Downloads/TUSUR/$cleanName", Toast.LENGTH_LONG).show()
+
+            } catch (e: Exception) {
+                Toast.makeText(this@CourseContentActivity,
+                    "Ошибка загрузки: ${e.message}", Toast.LENGTH_LONG).show()
+            }
+        }
     }
 
     private fun addDivider(parent: LinearLayout) {
