@@ -36,7 +36,7 @@ import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 
 class MapFragment : Fragment() {
 
-    private lateinit var mapView: MapView
+    private var mapView: MapView? = null
     private var myLocationOverlay: MyLocationNewOverlay? = null
 
     // Центр — главный корпус ТУСУР (пр. Ленина, 40, Томск)
@@ -182,48 +182,51 @@ class MapFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        mapView = view.findViewById(R.id.map_view)
+        val map = view.findViewById<MapView>(R.id.map_view)
+        mapView = map
+
+        setupMap(map)
+        addPlaceMarkers(map)
+
         val etSearch = view.findViewById<EditText>(R.id.et_map_search)
         val btnSearch = view.findViewById<TextView>(R.id.btn_search)
         val cardResults = view.findViewById<CardView>(R.id.card_results)
         val rvResults = view.findViewById<RecyclerView>(R.id.rv_search_results)
         val btnMyLocation = view.findViewById<CardView>(R.id.btn_my_location)
 
-        setupMap()
-        addPlaceMarkers()
-
         rvResults.layoutManager = LinearLayoutManager(requireContext())
-        setupSearch(etSearch, btnSearch, cardResults, rvResults)
+        setupSearch(map, etSearch, btnSearch, cardResults, rvResults)
 
         btnMyLocation.setOnClickListener { goToMyLocation() }
         requestLocationPermission()
     }
 
-    private fun setupMap() {
-        mapView.setTileSource(TileSourceFactory.MAPNIK)
-        mapView.setMultiTouchControls(true)
-        mapView.minZoomLevel = 10.0
-        mapView.maxZoomLevel = 19.0
+    private fun setupMap(map: MapView) {
+        map.setTileSource(TileSourceFactory.MAPNIK)
+        map.setMultiTouchControls(true)
+        map.minZoomLevel = 10.0
+        map.maxZoomLevel = 19.0
 
-        mapView.controller.setZoom(16.0)
-        mapView.controller.setCenter(TUSUR_CENTER)
+        map.controller.setZoom(16.0)
+        map.controller.setCenter(TUSUR_CENTER)
 
-        mapView.setUseDataConnection(true)
-        mapView.isTilesScaledToDpi = true
+        map.setUseDataConnection(true)
+        map.isTilesScaledToDpi = true
 
         try {
-            myLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(requireContext()), mapView)
-            myLocationOverlay?.enableMyLocation()
-            mapView.overlays.add(myLocationOverlay)
+            val overlay = MyLocationNewOverlay(GpsMyLocationProvider(requireContext()), map)
+            overlay.enableMyLocation()
+            myLocationOverlay = overlay
+            map.overlays.add(overlay)
         } catch (_: Exception) {}
     }
 
-    private fun addPlaceMarkers() {
+    private fun addPlaceMarkers(map: MapView) {
         for (place in places) {
             val isTusur = place.name.contains("ТУСУР", true)
             val needsLabel = isTusur && (place.type == PlaceType.BUILDING || place.type == PlaceType.DORMITORY || place.type == PlaceType.LIBRARY || place.type == PlaceType.SPORTS)
 
-            val marker = Marker(mapView)
+            val marker = Marker(map)
             marker.position = GeoPoint(place.lat, place.lon)
             marker.title = place.name
             marker.snippet = place.address
@@ -239,9 +242,9 @@ class MapFragment : Fragment() {
                 marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
             }
 
-            mapView.overlays.add(marker)
+            map.overlays.add(marker)
         }
-        mapView.invalidate()
+        map.invalidate()
     }
 
     private fun getTypeColor(type: PlaceType): Int = when (type) {
@@ -355,7 +358,7 @@ class MapFragment : Fragment() {
     }
 
     private fun setupSearch(
-        etSearch: EditText, btnSearch: TextView,
+        map: MapView, etSearch: EditText, btnSearch: TextView,
         cardResults: CardView, rvResults: RecyclerView
     ) {
         val searchAction = {
@@ -364,8 +367,8 @@ class MapFragment : Fragment() {
                 val results = searchPlaces(query)
                 if (results.isNotEmpty()) {
                     rvResults.adapter = SearchResultAdapter(results) { place ->
-                        mapView.controller.animateTo(GeoPoint(place.lat, place.lon))
-                        mapView.controller.setZoom(18.0)
+                        map.controller.animateTo(GeoPoint(place.lat, place.lon))
+                        map.controller.setZoom(18.0)
                         cardResults.visibility = View.GONE
                         hideKeyboard(etSearch)
                     }
@@ -389,7 +392,7 @@ class MapFragment : Fragment() {
         }
         btnSearch.setOnClickListener { searchAction(); hideKeyboard(etSearch) }
 
-        mapView.setOnTouchListener { _, _ ->
+        map.setOnTouchListener { _, _ ->
             if (cardResults.visibility == View.VISIBLE) cardResults.visibility = View.GONE
             false
         }
@@ -410,13 +413,14 @@ class MapFragment : Fragment() {
     }
 
     private fun goToMyLocation() {
+        val map = mapView ?: return
         val loc = myLocationOverlay?.myLocation
         if (loc != null) {
-            mapView.controller.animateTo(loc)
-            mapView.controller.setZoom(17.0)
+            map.controller.animateTo(loc)
+            map.controller.setZoom(17.0)
         } else {
-            mapView.controller.animateTo(TUSUR_CENTER)
-            mapView.controller.setZoom(16.0)
+            map.controller.animateTo(TUSUR_CENTER)
+            map.controller.setZoom(16.0)
         }
     }
 
@@ -432,9 +436,26 @@ class MapFragment : Fragment() {
         imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
-    override fun onResume() { super.onResume(); mapView.onResume() }
-    override fun onPause() { mapView.onPause(); super.onPause() }
-    override fun onDestroyView() { myLocationOverlay?.disableMyLocation(); mapView.onDetach(); super.onDestroyView() }
+    override fun onResume() {
+        super.onResume()
+        mapView?.onResume()
+    }
+
+    override fun onPause() {
+        mapView?.onPause()
+        super.onPause()
+    }
+
+    override fun onDestroyView() {
+        try {
+            myLocationOverlay?.disableMyLocation()
+            myLocationOverlay = null
+            mapView?.overlays?.clear()
+            mapView?.onDetach()
+        } catch (_: Exception) {}
+        mapView = null
+        super.onDestroyView()
+    }
 }
 
 class SearchResultAdapter(
