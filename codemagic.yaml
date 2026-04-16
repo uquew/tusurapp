@@ -68,6 +68,7 @@ workflows:
       email:
         recipients:
           - andrey228131@yandex.ru
+          - damirrizaev9@gmail.com
         notify:
           success: true
           failure: true

@@ -5,7 +5,7 @@
     android:layout_height="match_parent"
     android:background="@color/background">
 
-    <!-- Основной контент: список секций/модулей -->
+    <!-- Список секций/модулей -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -45,7 +45,6 @@
                 android:maxLines="2"
                 android:ellipsize="end"
                 android:layout_marginStart="4dp" />
-
         </LinearLayout>
 
         <ProgressBar
@@ -76,19 +75,18 @@
             android:paddingTop="8dp"
             android:paddingBottom="16dp"
             android:clipToPadding="false" />
-
     </LinearLayout>
 
-    <!-- WebView overlay для модулей -->
+    <!-- Нативный просмотр модуля -->
     <LinearLayout
-        android:id="@+id/web_container"
+        android:id="@+id/module_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:background="@color/background"
         android:visibility="gone">
 
-        <!-- Top bar для WebView -->
+        <!-- Top bar модуля -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -102,7 +100,7 @@
             android:elevation="2dp">
 
             <TextView
-                android:id="@+id/tv_web_back"
+                android:id="@+id/tv_module_back"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
                 android:gravity="center"
@@ -112,24 +110,39 @@
                 android:background="?android:attr/selectableItemBackgroundBorderless" />
 
             <TextView
-                android:id="@+id/tv_web_title"
+                android:id="@+id/tv_module_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:textColor="@color/text_primary"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                android:maxLines="1"
+                android:maxLines="2"
                 android:ellipsize="end"
                 android:layout_marginStart="4dp" />
-
         </LinearLayout>
 
-        <WebView
-            android:id="@+id/webview_module"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+        <ProgressBar
+            android:id="@+id/progress_module"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="40dp"
+            android:indeterminateTint="@color/primary"
+            android:visibility="gone" />
 
+        <ScrollView
+            android:id="@+id/module_scroll"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <LinearLayout
+                android:id="@+id/module_content"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp" />
+        </ScrollView>
     </LinearLayout>
 
 </FrameLayout>

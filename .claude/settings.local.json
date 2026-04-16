@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/andre/AppData/Roaming/Claude/local-agent-mode-sessions/skills-plugin/203fc44b-8f36-4c57-93e0-4714587bb070/d6056571-90f6-4761-bb00-a79c76f5cd83/skills/docx/**)",
+      "Bash(python scripts/office/unpack.py \"C:/Users/andre/Downloads/Telegram Desktop/flowchart_tusur.docx\" unpacked_flowchart/)",
+      "Bash(pip install:*)",
+      "Bash(mkdir -p /tmp/flowchart_unpack)",
+      "Read(//tmp/**)",
+      "Bash(unzip -o \"C:/Users/andre/Downloads/Telegram Desktop/flowchart_tusur.docx\")",
+      "WebFetch(domain:profile.tusur.ru)",
+      "WebFetch(domain:sdo.tusur.ru)",
+      "Bash(export PATH=\"$PATH:/c/Program Files/GitHub CLI\")",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" auth status)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" auth login --web --git-protocol https)",
+      "Bash(\"/c/Program Files/GitHub CLI/gh.exe\" repo create tusurapp --public --source=. --remote=origin --push)",
+      "Bash(curl -sL \"https://raw.githubusercontent.com/gradle/gradle/v8.13.0/gradle/wrapper/gradle-wrapper.jar\" -o \"C:/2 K/2 semak/OPD/tusurapp/gradle/wrapper/gradle-wrapper.jar\")",
+      "Bash(cp \"C:/2 K/2 semak/OPD/tusurapp-ios/TusurApp/\"*.swift \"C:/2 K/2 semak/OPD/tusurapp/ios/TusurApp/\")",
+      "Bash(cp \"C:/2 K/2 semak/OPD/tusurapp-ios/TusurApp/Info.plist\" \"C:/2 K/2 semak/OPD/tusurapp/ios/TusurApp/\")"
+    ]
+  }
+}
