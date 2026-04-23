@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:gravity="center_vertical">
+
+        <!-- Название предмета -->
+        <TextView
+            android:id="@+id/tv_dl_subject"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:textColor="#1A1A2E"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:lineSpacingMultiplier="1.2"
+            android:layout_marginEnd="8dp"/>
+
+        <!-- Аудитория -->
+        <TextView
+            android:id="@+id/tv_dl_room"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="#777777"
+            android:textSize="12sp"
+            android:layout_marginEnd="10dp"/>
+
+        <!-- Время -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="end">
+
+            <TextView
+                android:id="@+id/tv_dl_time_start"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#1565C0"
+                android:textSize="13sp"
+                android:textStyle="bold"/>
+
+            <TextView
+                android:id="@+id/tv_dl_time_end"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#AAAAAA"
+                android:textSize="12sp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Разделитель -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#F0F0F0"
+        android:marginStart="16dp"
+        android:marginEnd="16dp"/>
+
+</LinearLayout>
