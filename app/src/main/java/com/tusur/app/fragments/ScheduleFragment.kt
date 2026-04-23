@@ -80,26 +80,16 @@ class ScheduleFragment : Fragment() {
         tvNoLessons     = view.findViewById(R.id.tv_no_lessons)
         rvDayLessons.layoutManager = LinearLayoutManager(requireContext())
 
-        // --- Кнопки ---
+        // --- Кнопки (только открытие календаря и назад) ---
         view.findViewById<TextView>(R.id.btn_calendar_open).setOnClickListener {
             calendarMonth = currentWeekMonday.clone() as Calendar
             showScreen(Screen.CALENDAR)
             buildCalendarView()
         }
-        view.findViewById<TextView>(R.id.btn_week_prev).setOnClickListener { prevWeek() }
-        view.findViewById<TextView>(R.id.btn_week_next).setOnClickListener { nextWeek() }
         view.findViewById<TextView>(R.id.btn_calendar_back).setOnClickListener { showScreen(Screen.WEEK) }
-        view.findViewById<TextView>(R.id.btn_cal_prev).setOnClickListener { prevMonth() }
-        view.findViewById<TextView>(R.id.btn_cal_next).setOnClickListener { nextMonth() }
         view.findViewById<TextView>(R.id.btn_day_back).setOnClickListener { showScreen(Screen.WEEK) }
-        view.findViewById<TextView>(R.id.btn_day_prev).setOnClickListener {
-            currentDay.add(Calendar.DAY_OF_MONTH, -1); renderDayScreen()
-        }
-        view.findViewById<TextView>(R.id.btn_day_next).setOnClickListener {
-            currentDay.add(Calendar.DAY_OF_MONTH, 1); renderDayScreen()
-        }
 
-        // --- Свайп на экране недели ---
+        // --- Свайп на экране недели (влево = следующая, вправо = предыдущая) ---
         setupSwipe(screenWeek,
             onLeft  = { nextWeek() },
             onRight = { prevWeek() }
@@ -109,6 +99,12 @@ class ScheduleFragment : Fragment() {
         setupSwipe(screenCalendar,
             onLeft  = { nextMonth() },
             onRight = { prevMonth() }
+        )
+
+        // --- Свайп на экране дня ---
+        setupSwipe(screenDay,
+            onLeft  = { currentDay.add(Calendar.DAY_OF_MONTH, 1);  renderDayScreen() },
+            onRight = { currentDay.add(Calendar.DAY_OF_MONTH, -1); renderDayScreen() }
         )
 
         showScreen(Screen.WEEK)

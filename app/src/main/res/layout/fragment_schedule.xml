@@ -54,35 +54,6 @@
             android:paddingBottom="4dp"
             android:clipToPadding="false"/>
 
-        <!-- Навигация -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:orientation="horizontal"
-            android:gravity="center">
-
-            <TextView
-                android:id="@+id/btn_week_prev"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="&#171;"
-                android:textColor="@color/primary"
-                android:textSize="32sp"
-                android:padding="16dp"
-                android:background="?android:attr/selectableItemBackgroundBorderless"/>
-
-            <View android:layout_width="40dp" android:layout_height="1dp"/>
-
-            <TextView
-                android:id="@+id/btn_week_next"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="&#187;"
-                android:textColor="@color/primary"
-                android:textSize="32sp"
-                android:padding="16dp"
-                android:background="?android:attr/selectableItemBackgroundBorderless"/>
-        </LinearLayout>
     </LinearLayout>
 
     <!-- ===================== ЭКРАН 2: КАЛЕНДАРЬ ===================== -->
@@ -150,35 +121,6 @@
             </androidx.cardview.widget.CardView>
         </FrameLayout>
 
-        <!-- Навигация -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:orientation="horizontal"
-            android:gravity="center">
-
-            <TextView
-                android:id="@+id/btn_cal_prev"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="&#171;"
-                android:textColor="@color/primary"
-                android:textSize="32sp"
-                android:padding="16dp"
-                android:background="?android:attr/selectableItemBackgroundBorderless"/>
-
-            <View android:layout_width="40dp" android:layout_height="1dp"/>
-
-            <TextView
-                android:id="@+id/btn_cal_next"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="&#187;"
-                android:textColor="@color/primary"
-                android:textSize="32sp"
-                android:padding="16dp"
-                android:background="?android:attr/selectableItemBackgroundBorderless"/>
-        </LinearLayout>
     </LinearLayout>
 
     <!-- ===================== ЭКРАН 3: ЗАНЯТИЯ ДНЯ ===================== -->
@@ -269,35 +211,6 @@
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
-        <!-- Навигация -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="60dp"
-            android:orientation="horizontal"
-            android:gravity="center">
-
-            <TextView
-                android:id="@+id/btn_day_prev"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="&#171;"
-                android:textColor="@color/primary"
-                android:textSize="32sp"
-                android:padding="16dp"
-                android:background="?android:attr/selectableItemBackgroundBorderless"/>
-
-            <View android:layout_width="40dp" android:layout_height="1dp"/>
-
-            <TextView
-                android:id="@+id/btn_day_next"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="&#187;"
-                android:textColor="@color/primary"
-                android:textSize="32sp"
-                android:padding="16dp"
-                android:background="?android:attr/selectableItemBackgroundBorderless"/>
-        </LinearLayout>
     </LinearLayout>
 
 </FrameLayout>
