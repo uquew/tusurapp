@@ -44,7 +44,14 @@ class MainActivity : AppCompatActivity() {
             override fun createFragment(position: Int): Fragment = fragments[position]
         }
 
-        // Свайп → меняет таб
+        // Держим все 4 фрагмента в памяти — карта не уничтожается при переключении вкладок
+        viewPager.offscreenPageLimit = fragments.size
+
+        // Отключаем свайп ViewPager2 — карта перехватывала горизонтальные жесты
+        // Навигация только через нижнее меню
+        viewPager.isUserInputEnabled = false
+
+        // Таб → меняет страницу (onPageSelected больше не нужен, свайп отключён)
         viewPager.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
             override fun onPageSelected(position: Int) {
                 bottomNav.selectedItemId = navIds[position]

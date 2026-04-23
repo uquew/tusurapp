@@ -185,14 +185,14 @@ class MapFragment : Fragment() {
         val map = view.findViewById<MapView>(R.id.map_view)
         mapView = map
 
-        setupMap(map)
-        addPlaceMarkers(map)
-
-        val etSearch = view.findViewById<EditText>(R.id.et_map_search)
-        val btnSearch = view.findViewById<TextView>(R.id.btn_search)
+        val etSearch    = view.findViewById<EditText>(R.id.et_map_search)
+        val btnSearch   = view.findViewById<TextView>(R.id.btn_search)
         val cardResults = view.findViewById<CardView>(R.id.card_results)
-        val rvResults = view.findViewById<RecyclerView>(R.id.rv_search_results)
+        val rvResults   = view.findViewById<RecyclerView>(R.id.rv_search_results)
         val btnMyLocation = view.findViewById<CardView>(R.id.btn_my_location)
+
+        setupMap(map, cardResults)
+        addPlaceMarkers(map)
 
         rvResults.layoutManager = LinearLayoutManager(requireContext())
         setupSearch(map, etSearch, btnSearch, cardResults, rvResults)
@@ -201,7 +201,7 @@ class MapFragment : Fragment() {
         requestLocationPermission()
     }
 
-    private fun setupMap(map: MapView) {
+    private fun setupMap(map: MapView, cardResults: CardView) {
         map.setTileSource(TileSourceFactory.MAPNIK)
         map.setMultiTouchControls(true)
         map.minZoomLevel = 10.0
@@ -212,6 +212,14 @@ class MapFragment : Fragment() {
 
         map.setUseDataConnection(true)
         map.isTilesScaledToDpi = true
+
+        // Единственный touch listener: запрещаем родителю перехватывать жесты
+        // и закрываем результаты поиска при касании карты
+        map.setOnTouchListener { v, _ ->
+            v.parent?.requestDisallowInterceptTouchEvent(true)
+            if (cardResults.visibility == View.VISIBLE) cardResults.visibility = View.GONE
+            false
+        }
 
         try {
             val overlay = MyLocationNewOverlay(GpsMyLocationProvider(requireContext()), map)
@@ -391,11 +399,7 @@ class MapFragment : Fragment() {
             if (actionId == EditorInfo.IME_ACTION_SEARCH) { searchAction(); hideKeyboard(etSearch); true } else false
         }
         btnSearch.setOnClickListener { searchAction(); hideKeyboard(etSearch) }
-
-        map.setOnTouchListener { _, _ ->
-            if (cardResults.visibility == View.VISIBLE) cardResults.visibility = View.GONE
-            false
-        }
+        // touch listener для карты устанавливается в setupMap с учётом cardResults
     }
 
     private fun searchPlaces(query: String): List<MapPlace> {
