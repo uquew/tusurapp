@@ -18,6 +18,11 @@ class SessionManager(context: Context) {
         get() = prefs.getString("user_password", "") ?: ""
         set(value) { prefs.edit().putString("user_password", value).apply() }
 
+    // Номер группы для расписания, например "444-1"
+    var group: String
+        get() = prefs.getString("user_group", "") ?: ""
+        set(value) { prefs.edit().putString("user_group", value).apply() }
+
     fun saveCookies(cookies: Map<String, String>) {
         val editor = prefs.edit()
         cookies.forEach { (k, v) -> editor.putString("cookie_$k", v) }
