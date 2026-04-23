@@ -4,7 +4,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_schedule_gradient">
+    android:background="@color/background">
 
     <!-- ===================== ЭКРАН 1: НЕДЕЛЯ (главный) ===================== -->
     <LinearLayout
@@ -25,7 +25,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/primary"
                 android:textSize="16sp"
                 android:textStyle="bold"
                 android:text="Расписание"/>
@@ -66,21 +66,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="&#171;"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/primary"
                 android:textSize="32sp"
                 android:padding="16dp"
                 android:background="?android:attr/selectableItemBackgroundBorderless"/>
 
-            <View
-                android:layout_width="40dp"
-                android:layout_height="1dp"/>
+            <View android:layout_width="40dp" android:layout_height="1dp"/>
 
             <TextView
                 android:id="@+id/btn_week_next"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="&#187;"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/primary"
                 android:textSize="32sp"
                 android:padding="16dp"
                 android:background="?android:attr/selectableItemBackgroundBorderless"/>
@@ -110,7 +108,7 @@
                 android:layout_alignParentStart="true"
                 android:gravity="center"
                 android:text="&#8592;"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/primary"
                 android:textSize="24sp"
                 android:background="?android:attr/selectableItemBackgroundBorderless"/>
 
@@ -119,7 +117,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/primary"
                 android:textSize="16sp"
                 android:textStyle="bold"/>
         </RelativeLayout>
@@ -137,8 +135,8 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 app:cardCornerRadius="20dp"
-                app:cardElevation="8dp"
-                app:cardBackgroundColor="#FFFFFF">
+                app:cardElevation="4dp"
+                app:cardBackgroundColor="@color/surface">
 
                 <LinearLayout
                     android:id="@+id/calendar_container"
@@ -164,21 +162,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="&#171;"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/primary"
                 android:textSize="32sp"
                 android:padding="16dp"
                 android:background="?android:attr/selectableItemBackgroundBorderless"/>
 
-            <View
-                android:layout_width="40dp"
-                android:layout_height="1dp"/>
+            <View android:layout_width="40dp" android:layout_height="1dp"/>
 
             <TextView
                 android:id="@+id/btn_cal_next"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="&#187;"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/primary"
                 android:textSize="32sp"
                 android:padding="16dp"
                 android:background="?android:attr/selectableItemBackgroundBorderless"/>
@@ -206,7 +202,7 @@
                 android:layout_centerVertical="true"
                 android:gravity="center"
                 android:text="&#8592;"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/primary"
                 android:textSize="24sp"
                 android:background="?android:attr/selectableItemBackgroundBorderless"/>
         </RelativeLayout>
@@ -220,21 +216,20 @@
             android:layout_marginEnd="16dp"
             android:layout_marginBottom="8dp"
             app:cardCornerRadius="20dp"
-            app:cardElevation="6dp"
-            app:cardBackgroundColor="#FFFFFF">
+            app:cardElevation="4dp"
+            app:cardBackgroundColor="@color/surface">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <!-- Заголовок дня -->
                 <TextView
                     android:id="@+id/tv_day_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:textColor="#1565C0"
+                    android:textColor="@color/primary"
                     android:textSize="22sp"
                     android:textStyle="bold"
                     android:paddingTop="20dp"
@@ -245,16 +240,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
-                    android:textColor="#999999"
+                    android:textColor="@color/text_secondary"
                     android:textSize="13sp"
                     android:paddingBottom="12dp"/>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="#F0F0F0"/>
+                    android:background="@color/divider"/>
 
-                <!-- Список занятий -->
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_day_lessons"
                     android:layout_width="match_parent"
@@ -263,13 +257,12 @@
                     android:paddingBottom="8dp"
                     android:clipToPadding="false"/>
 
-                <!-- Нет занятий -->
                 <TextView
                     android:id="@+id/tv_no_lessons"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
-                    android:textColor="#AAAAAA"
+                    android:textColor="@color/text_secondary"
                     android:textSize="15sp"
                     android:text="Нет занятий"
                     android:visibility="gone"/>
@@ -288,21 +281,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="&#171;"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/primary"
                 android:textSize="32sp"
                 android:padding="16dp"
                 android:background="?android:attr/selectableItemBackgroundBorderless"/>
 
-            <View
-                android:layout_width="40dp"
-                android:layout_height="1dp"/>
+            <View android:layout_width="40dp" android:layout_height="1dp"/>
 
             <TextView
                 android:id="@+id/btn_day_next"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="&#187;"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/primary"
                 android:textSize="32sp"
                 android:padding="16dp"
                 android:background="?android:attr/selectableItemBackgroundBorderless"/>

@@ -39,8 +39,8 @@ class MapFragment : Fragment() {
     private var mapView: MapView? = null
     private var myLocationOverlay: MyLocationNewOverlay? = null
 
-    // Центр — главный корпус ТУСУР (пр. Ленина, 40, Томск)
-    private val TUSUR_CENTER = GeoPoint(56.4703, 84.9505)
+    // Центр между главным корпусом и спорткомплексом
+    private val TUSUR_CENTER = GeoPoint(56.4613, 84.9530)
 
     data class MapPlace(
         val name: String,
@@ -54,24 +54,18 @@ class MapFragment : Fragment() {
 
     enum class PlaceType { BUILDING, LIBRARY }
 
-    // Только учебные корпуса ТУСУР
+    // Учебные корпуса и спорткомплекс ТУСУР
     private val places = listOf(
         MapPlace("Главный корпус ТУСУР", "ГК", "пр. Ленина, 40",
             56.4703, 84.9505, PlaceType.BUILDING, "Главный учебный корпус"),
         MapPlace("Корпус ФЭТ ТУСУР", "ФЭТ", "ул. Вершинина, 74",
-            56.4678, 84.9486, PlaceType.BUILDING, "Факультет электронной техники"),
-        MapPlace("Учебно-лабораторный корпус ТУСУР", "УЛК", "ул. Красноармейская, 146",
-            56.4714, 84.9533, PlaceType.BUILDING, "Учебно-лабораторный корпус"),
+            56.4676, 84.9483, PlaceType.BUILDING, "Факультет электронной техники"),
         MapPlace("Радиотехнический корпус ТУСУР", "РК", "ул. Вершинина, 47",
-            56.4688, 84.9462, PlaceType.BUILDING, "Радиотехнический факультет"),
-        MapPlace("Корпус ФСУ ТУСУР", "ФСУ", "ул. Красноармейская, 146",
-            56.4710, 84.9540, PlaceType.BUILDING, "Факультет систем управления"),
-        MapPlace("Корпус ФВС ТУСУР", "ФВС", "ул. Красноармейская, 146б",
-            56.4718, 84.9528, PlaceType.BUILDING, "Факультет вычислительных систем"),
-        MapPlace("Бизнес-инкубатор ТУСУР", "БИ", "ул. Вершинина, 72",
-            56.4681, 84.9479, PlaceType.BUILDING, "Студенческий бизнес-инкубатор"),
-        MapPlace("Научная библиотека ТУСУР", "Библиотека", "ул. Вершинина, 47",
-            56.4685, 84.9458, PlaceType.LIBRARY, "Научная библиотека университета")
+            56.4687, 84.9455, PlaceType.BUILDING, "Радиотехнический факультет"),
+        MapPlace("Учебно-лабораторный корпус ТУСУР", "УЛК", "ул. Красноармейская, 146",
+            56.4712, 84.9532, PlaceType.BUILDING, "Учебно-лабораторный корпус"),
+        MapPlace("Спорткомплекс ТУСУР", "Спорт", "ул. Красноармейская",
+            56.45236, 84.959653, PlaceType.BUILDING, "Спортивный комплекс ТУСУР")
     )
 
     override fun onCreateView(
@@ -111,7 +105,7 @@ class MapFragment : Fragment() {
         map.minZoomLevel = 10.0
         map.maxZoomLevel = 19.0
 
-        map.controller.setZoom(16.0)
+        map.controller.setZoom(15.0)
         map.controller.setCenter(TUSUR_CENTER)
 
         map.setUseDataConnection(true)

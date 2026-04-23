@@ -24,7 +24,7 @@
             android:id="@+id/tv_day_item_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#1A1A2E"
+            android:textColor="@color/text_primary"
             android:textSize="18sp"
             android:textStyle="bold"/>
 
@@ -32,7 +32,7 @@
             android:id="@+id/tv_day_item_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#777777"
+            android:textColor="@color/text_secondary"
             android:textSize="13sp"
             android:layout_marginTop="3dp"/>
     </LinearLayout>
