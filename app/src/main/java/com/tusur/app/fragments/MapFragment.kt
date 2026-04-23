@@ -136,7 +136,7 @@ class MapFragment : Fragment() {
     private fun addPlaceMarkers(map: MapView) {
         for (place in places) {
             val isTusur = place.name.contains("ТУСУР", true)
-            val needsLabel = isTusur && (place.type == PlaceType.BUILDING || place.type == PlaceType.DORMITORY)
+            val needsLabel = isTusur && place.type == PlaceType.BUILDING
 
             val marker = Marker(map)
             marker.position = GeoPoint(place.lat, place.lon)
